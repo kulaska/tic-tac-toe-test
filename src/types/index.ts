@@ -36,7 +36,7 @@ type FinishGameAction = {
 
 type ResetGameAction = {
     type: typeof RESET_GAME;
-    payload: any
+    payload: any;
 };
 
 export type GameElement = "" | "X" | "O";
@@ -51,7 +51,11 @@ export type ReduxState = {
     readonly player: GameElement;
 };
 
-export type GameActions = ProcessMoveAction | ResetGameAction | SetBoardAction | FinishGameAction;
+export type GameActions =
+    | ProcessMoveAction
+    | ResetGameAction
+    | SetBoardAction
+    | FinishGameAction;
 
 export type ServerRequest = {
     index: number;

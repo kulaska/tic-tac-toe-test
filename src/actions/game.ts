@@ -7,6 +7,7 @@ import {
     FINISH_GAME
 } from "./actionTypes";
 import { GameElement, Board, ServerResponse } from "../types";
+import { AxiosResponse } from "axios";
 
 function processMove(index: number, symbol: GameElement) {
     return {
@@ -22,7 +23,7 @@ function setBoard(newBoard: Board, isEnd?: boolean, winner?: GameElement) {
     return {
         type: SET_BOARD,
         payload: {
-            newBoard
+            newBoard: [...newBoard]
         }
     };
 }
@@ -50,10 +51,12 @@ export function processUserMove(index: number, symbol: GameElement) {
         dispatch(processMove(index, symbol));
 
         try {
-            const data: ServerResponse = await axios.post(
+            const response: AxiosResponse = await axios.post(
                 "/api/game/move",
                 body
             );
+
+            const data: ServerResponse = response.data;
 
             dispatch(setBoard(data.result.board));
 
@@ -68,8 +71,15 @@ export function processUserMove(index: number, symbol: GameElement) {
 }
 
 export function resetGame() {
-    return {
-        type: RESET_GAME,
-        payload: {}
+    return async function(dispatch: Redux.Dispatch) {
+        try {
+            const response: AxiosResponse = await axios.post("/api/game/reset");
+        } catch (err) {
+            console.log(err);
+        }
+        dispatch({
+            type: RESET_GAME,
+            payload: {}
+        });
     };
 }

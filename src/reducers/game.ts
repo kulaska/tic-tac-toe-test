@@ -6,7 +6,7 @@ import {
 } from "../actions/actionTypes";
 import { GameElement, Board, GameActions, ReduxState } from "../types";
 
-const initialBoard: Board = [
+const returnEmptyBoard = (): Board => [
     ["", "", ""],
     ["", "", ""],
     ["", "", ""]
@@ -17,7 +17,7 @@ const initialState: ReduxState = {
     AiWins: 0,
     draw: 0,
     player: "X",
-    currentBoard: [...initialBoard]
+    currentBoard: returnEmptyBoard()
 };
 
 const getRowPosition = (index: number): number => {
@@ -34,25 +34,25 @@ const changePlayerSide = (currentSide: GameElement): GameElement => {
 
 const setBoardItem = (board: Board, index: number, symbol: GameElement) => {
     const boardCopy = [...board];
-    const row = getRowPosition(index);
-    const column = getColumnPosition(index);
+    const row = getRowPosition(index - 1);
+    const column = getColumnPosition(index - 1);
     boardCopy[row][column] = symbol;
 
     return boardCopy;
 };
 
-export default function (state: ReduxState = initialState, action: GameActions) {
+export default function(state: ReduxState = initialState, action: GameActions) {
     const { type, payload } = action;
 
     switch (type) {
         case RESET_GAME:
             return {
                 ...state,
-                currentBoard: [...initialBoard]
+                currentBoard: returnEmptyBoard()
             };
         case PROCESS_MOVE:
             const newBoard = setBoardItem(
-                [...state.currentBoard],
+                state.currentBoard,
                 payload.index,
                 payload.symbol
             );
