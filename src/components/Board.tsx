@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { processUserMove, resetGame } from "../actions/game";
+import { processUserMove, resetGame, getCurrentGameState } from "../actions/game";
 import { connect } from "react-redux";
 
 import Symbol from "./Symbol";
@@ -7,14 +7,21 @@ import Symbol from "./Symbol";
 function Board({
     reducer: { currentBoard, player },
     processUserMove,
-    resetGame
+    resetGame,
+    getCurrentGameState
 }) {
+    useEffect(() => {
+        getCurrentGameState();
+    }, [getCurrentGameState]);
+
     const getElementIndex = (rowIndex: number, columnIndex: number): number => {
         return 3 * rowIndex + columnIndex + 1;
     };
 
-    const symbolClickHandler = (rowIndex, symbolIndex) => {
-        processUserMove(getElementIndex(rowIndex, symbolIndex), player);
+    const symbolClickHandler = (rowIndex: number, symbolIndex: number): void => {
+        if (currentBoard[rowIndex][symbolIndex] !== 'X' && currentBoard[rowIndex][symbolIndex] !== 'O') {
+            processUserMove(getElementIndex(rowIndex, symbolIndex), player);
+        }
     };
 
     return (
@@ -45,4 +52,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { processUserMove, resetGame })(Board);
+export default connect(mapStateToProps, { processUserMove, resetGame, getCurrentGameState })(Board);

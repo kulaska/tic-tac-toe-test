@@ -47,7 +47,7 @@ function finishGame(isDraw: boolean, winner: GameElement | undefined) {
 export function processUserMove(index: number, symbol: GameElement) {
     const body = JSON.stringify({ index });
 
-    return async function(dispatch: Redux.Dispatch) {
+    return async function (dispatch: Redux.Dispatch) {
         dispatch(processMove(index, symbol));
 
         try {
@@ -71,7 +71,7 @@ export function processUserMove(index: number, symbol: GameElement) {
 }
 
 export function resetGame() {
-    return async function(dispatch: Redux.Dispatch) {
+    return async function (dispatch: Redux.Dispatch) {
         try {
             const response: AxiosResponse = await axios.post("/api/game/reset");
         } catch (err) {
@@ -82,4 +82,18 @@ export function resetGame() {
             payload: {}
         });
     };
+}
+
+export function getCurrentGameState() {
+    return async function (dispatch: Redux.Dispatch) {
+        try {
+            const response: AxiosResponse = await axios.get('/api/game');
+
+            const data: ServerResponse = response.data;
+
+            dispatch(setBoard(data.result.board));
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
