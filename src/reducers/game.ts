@@ -20,7 +20,8 @@ const initialState: ReduxState = {
     draw: 0,
     player: "X",
     currentBoard: returnEmptyBoard(),
-    log: []
+    log: [],
+    didGameEnd: false
 };
 
 const getRowPosition = (index: number): number => {
@@ -72,7 +73,8 @@ export default function (state: ReduxState = initialState, action: GameActions) 
             return {
                 ...state,
                 currentBoard: returnEmptyBoard(),
-                log: []
+                log: [],
+                didGameEnd: false
             };
         case PROCESS_MOVE:
             const newBoard = setBoardItem(
@@ -87,7 +89,8 @@ export default function (state: ReduxState = initialState, action: GameActions) 
         case SET_BOARD:
             return {
                 ...state,
-                currentBoard: payload.newBoard
+                currentBoard: payload.newBoard,
+                didGameEnd: false
             };
         case FINISH_GAME:
             let { draw, playerWins, AiWins } = state;
@@ -99,7 +102,8 @@ export default function (state: ReduxState = initialState, action: GameActions) 
                     ...state,
                     player: newPlayerSide,
                     draw: draw + 1,
-                    log: [...state.log, getDrawLog()]
+                    log: [...state.log, getDrawLog()],
+                    didGameEnd: true
                 };
             } else {
                 if (payload.winner === state.player) {
@@ -107,14 +111,16 @@ export default function (state: ReduxState = initialState, action: GameActions) 
                         ...state,
                         player: newPlayerSide,
                         playerWins: playerWins + 1,
-                        log: [...state.log, getPlayerWinLog()]
+                        log: [...state.log, getPlayerWinLog()],
+                        didGameEnd: true
                     };
                 } else {
                     return {
                         ...state,
                         player: newPlayerSide,
                         AiWins: AiWins + 1,
-                        log: [...state.log, getAiWinLog()]
+                        log: [...state.log, getAiWinLog()],
+                        didGameEnd: true
                     };
                 }
             }

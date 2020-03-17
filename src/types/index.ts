@@ -67,6 +67,7 @@ export type ReduxState = {
     readonly currentBoard: Board;
     readonly player: GameElement;
     readonly log: Array<string>;
+    readonly didGameEnd: boolean;
 };
 
 export type GameActions =

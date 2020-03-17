@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
+import { Button } from '@material-ui/core';
 import { connect } from "react-redux";
 import { processUserMove, resetGame, getCurrentGameState, startNextGame } from "../actions/game";
 
 import Symbol from "./Symbol";
 
 function Board({
-    reducer: { currentBoard, player, log },
+    reducer: { currentBoard, player, log, didGameEnd },
     processUserMove,
     resetGame,
     getCurrentGameState,
@@ -16,13 +17,15 @@ function Board({
     }, [getCurrentGameState]);
 
     const symbolClickHandler = (rowIndex: number, symbolIndex: number): void => {
+        if (didGameEnd) return;
+
         if (currentBoard[rowIndex][symbolIndex] !== 'X' && currentBoard[rowIndex][symbolIndex] !== 'O') {
             processUserMove(rowIndex, symbolIndex, player);
         }
     };
 
     return (
-        <div>
+        <Fragment>
             <div className="board">
                 {currentBoard.map((row, rowIndex) =>
                     row.map((symbol, symbolIndex) => (
@@ -36,12 +39,12 @@ function Board({
                     ))
                 )}
             </div>
-            <div className="resetButton">
-                <button onClick={() => resetGame()}>Reset game</button>
-            </div>
-            <div className="startNextButton">
-                <button onClick={() => startNextGame()}>Start next game</button>
-            </div>
+            <Button variant="contained" color="primary" onClick={() => resetGame()}>
+                Reset game
+            </Button>
+            <Button variant="contained" color="primary" onClick={() => startNextGame()}>
+                Start next game
+            </Button>
             <div className="logdesk">
                 {log.map((logRecord) => (
                     <div>
@@ -49,7 +52,7 @@ function Board({
                     </div>
                 ))}
             </div>
-        </div>
+        </Fragment>
     );
 }
 

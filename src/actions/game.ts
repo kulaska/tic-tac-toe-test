@@ -8,6 +8,7 @@ import {
     AI_MOVE,
     PLAYER_MOVE
 } from "./actionTypes";
+import { getScore, setHistory } from './score';
 import store from '../store';
 import getBoardDifference from '../helpers/getBoardDifference';
 import { GameElement, Board, ServerResponse } from "../types";
@@ -96,6 +97,9 @@ export function processUserMove(rowIndex: number, columnIndex: number, symbol: G
             if (data.result.end) {
                 const isDraw = !data.result.winner;
                 dispatch(finishGame(isDraw, data.result.winner));
+                const { result } = await getScore();
+
+                dispatch(setHistory(result));
             } else {
                 dispatch(logAiMove(previousState, store.getState().gameReducer.currentBoard))
             }
