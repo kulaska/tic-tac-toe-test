@@ -15,9 +15,6 @@ const returnEmptyBoard = (): Board => [
 ];
 
 const initialState: ReduxState = {
-    playerWins: 0,
-    AiWins: 0,
-    draw: 0,
     player: "X",
     currentBoard: returnEmptyBoard(),
     log: [],
@@ -45,42 +42,51 @@ const setBoardItem = (board: Board, index: number, symbol: GameElement) => {
     return boardCopy;
 };
 
-const getPlayerLog = (rowIndex, columnIndex) => `Player makes a move at row ${rowIndex + 1}, column ${columnIndex + 1}`
+const getPlayerLog = (rowIndex, columnIndex) =>
+    `Player makes a move at row ${rowIndex + 1}, column ${columnIndex + 1}`;
 
-const getAILog = (rowIndex, columnIndex) => `AI makes a move at row ${rowIndex + 1}, column ${columnIndex + 1}`
+const getAILog = (rowIndex, columnIndex) =>
+    `AI makes a move at row ${rowIndex + 1}, column ${columnIndex + 1}`;
 
-const getAiWinLog = () => 'AI wins. bEwArE, pathetic homo sapiens';
+const getAiWinLog = () => "AI wins. bEwArE, pathetic homo sapiens";
 
-const getPlayerWinLog = () => 'Player wins. There is still hope';
+const getPlayerWinLog = () => "Player wins. There is still hope";
 
-const getDrawLog = () => 'It\'s a draw. For now';
+const getDrawLog = () => "It's a draw. For now";
 
-export default function (state: ReduxState = initialState, action: GameActions) {
+export default function(state: ReduxState = initialState, action: GameActions) {
     const { type, payload } = action;
 
     switch (type) {
         case PLAYER_MOVE:
             return {
                 ...state,
-                log: [...state.log, getPlayerLog(payload.rowIndex, payload.columnIndex)]
-            }
+                log: [
+                    ...state.log,
+                    getPlayerLog(payload.rowIndex, payload.columnIndex)
+                ]
+            };
         case AI_MOVE:
             return {
                 ...state,
-                log: [...state.log, getAILog(payload.rowIndex, payload.columnIndex)]
-            }
+                log: [
+                    ...state.log,
+                    getAILog(payload.rowIndex, payload.columnIndex)
+                ]
+            };
         case RESET_GAME:
             return {
                 ...state,
                 currentBoard: returnEmptyBoard(),
                 log: [],
-                didGameEnd: false
+                didGameEnd: false,
+                player: "X"
             };
         case PROCESS_MOVE:
             const newBoard = setBoardItem(
                 state.currentBoard,
                 payload.index,
-                payload.symbol
+                state.player
             );
             return {
                 ...state,
@@ -93,15 +99,12 @@ export default function (state: ReduxState = initialState, action: GameActions) 
                 didGameEnd: false
             };
         case FINISH_GAME:
-            let { draw, playerWins, AiWins } = state;
-
             let newPlayerSide = changePlayerSide(state.player);
 
             if (payload.isDraw) {
                 return {
                     ...state,
                     player: newPlayerSide,
-                    draw: draw + 1,
                     log: [...state.log, getDrawLog()],
                     didGameEnd: true
                 };
@@ -110,7 +113,6 @@ export default function (state: ReduxState = initialState, action: GameActions) 
                     return {
                         ...state,
                         player: newPlayerSide,
-                        playerWins: playerWins + 1,
                         log: [...state.log, getPlayerWinLog()],
                         didGameEnd: true
                     };
@@ -118,7 +120,6 @@ export default function (state: ReduxState = initialState, action: GameActions) 
                     return {
                         ...state,
                         player: newPlayerSide,
-                        AiWins: AiWins + 1,
                         log: [...state.log, getAiWinLog()],
                         didGameEnd: true
                     };

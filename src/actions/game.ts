@@ -8,9 +8,9 @@ import {
     AI_MOVE,
     PLAYER_MOVE
 } from "./actionTypes";
-import { getScore, setHistory } from './score';
-import store from '../store';
-import getBoardDifference from '../helpers/getBoardDifference';
+import { getScore, setHistory } from "./score";
+import store from "../store";
+import getBoardDifference from "../helpers/getBoardDifference";
 import { GameElement, Board, ServerResponse } from "../types";
 import { AxiosResponse } from "axios";
 
@@ -25,7 +25,7 @@ function logPlayerMove(rowIndex: number, columnIndex: number) {
             rowIndex,
             columnIndex
         }
-    }
+    };
 }
 
 function logAiMove(previousBoard: Board, newBoard: Board) {
@@ -37,10 +37,10 @@ function logAiMove(previousBoard: Board, newBoard: Board) {
             rowIndex,
             columnIndex
         }
-    }
+    };
 }
 
-function processMove(index: number, symbol: GameElement) {
+function processMove(index: number, symbol: any) {
     return {
         type: PROCESS_MOVE,
         payload: {
@@ -75,13 +75,13 @@ function finishGame(isDraw: boolean, winner: GameElement | undefined) {
     };
 }
 
-export function processUserMove(rowIndex: number, columnIndex: number, symbol: GameElement) {
-    const index = getElementIndex(rowIndex, columnIndex)
+export function processUserMove(rowIndex: number, columnIndex: number) {
+    const index = getElementIndex(rowIndex, columnIndex);
     const body = JSON.stringify({ index });
 
-    return async function (dispatch: Redux.Dispatch) {
-        dispatch(processMove(index, symbol));
-        dispatch(logPlayerMove(rowIndex, columnIndex))
+    return async function(dispatch: Redux.Dispatch) {
+        dispatch(processMove(index, store.getState().gameReducer.player));
+        dispatch(logPlayerMove(rowIndex, columnIndex));
 
         try {
             const response: AxiosResponse = await axios.post(
@@ -101,7 +101,12 @@ export function processUserMove(rowIndex: number, columnIndex: number, symbol: G
 
                 dispatch(setHistory(result));
             } else {
-                dispatch(logAiMove(previousState, store.getState().gameReducer.currentBoard))
+                dispatch(
+                    logAiMove(
+                        previousState,
+                        store.getState().gameReducer.currentBoard
+                    )
+                );
             }
         } catch (err) {
             console.log(err.message);
@@ -110,23 +115,29 @@ export function processUserMove(rowIndex: number, columnIndex: number, symbol: G
 }
 
 export function resetGame() {
-    return async function (dispatch: Redux.Dispatch) {
+    return async function(dispatch: Redux.Dispatch) {
         try {
             const response: AxiosResponse = await axios.post("/api/game/reset");
+            const {
+                data: { result }
+            } = response;
+
+            dispatch({
+                type: RESET_GAME,
+                payload: {
+                    player: result.player
+                }
+            });
         } catch (err) {
             console.log(err);
         }
-        dispatch({
-            type: RESET_GAME,
-            payload: {}
-        });
     };
 }
 
 export function getCurrentGameState() {
-    return async function (dispatch: Redux.Dispatch) {
+    return async function(dispatch: Redux.Dispatch) {
         try {
-            const response: AxiosResponse = await axios.get('/api/game');
+            const response: AxiosResponse = await axios.get("/api/game");
 
             const data: ServerResponse = response.data;
 
@@ -134,21 +145,19 @@ export function getCurrentGameState() {
         } catch (err) {
             console.log(err);
         }
-    }
+    };
 }
 
 export function startNextGame() {
-    return async function (dispatch: Redux.Dispatch) {
+    return async function(dispatch: Redux.Dispatch) {
         try {
-            const response: AxiosResponse = await axios.get(
-                "/api/game/next"
-            );
+            const response: AxiosResponse = await axios.get("/api/game/next");
 
             const data: ServerResponse = response.data;
 
             dispatch(setBoard(data.result.board));
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
-    }
+    };
 }

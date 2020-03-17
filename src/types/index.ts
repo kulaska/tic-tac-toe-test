@@ -61,9 +61,6 @@ export type GameElement = "X" | "O" | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type Board = Array<Array<GameElement>>;
 
 export type ReduxState = {
-    readonly playerWins: number;
-    readonly AiWins: number;
-    readonly draw: number;
     readonly currentBoard: Board;
     readonly player: GameElement;
     readonly log: Array<string>;

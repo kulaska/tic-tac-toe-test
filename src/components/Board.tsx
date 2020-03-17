@@ -1,14 +1,18 @@
 import React, { useEffect, Fragment } from "react";
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Paper, useTheme } from "@material-ui/core";
 import { connect } from "react-redux";
-import { processUserMove, resetGame, getCurrentGameState, startNextGame } from "../actions/game";
+import {
+    processUserMove,
+    resetGame,
+    getCurrentGameState,
+    startNextGame
+} from "../actions/game";
 
 import Symbol from "./Symbol";
 import useStyles from "./Board.styles";
 
-
 function Board({
-    reducer: { currentBoard, player, log, didGameEnd },
+    reducer: { currentBoard, log, didGameEnd },
     processUserMove,
     resetGame,
     getCurrentGameState,
@@ -18,13 +22,21 @@ function Board({
         getCurrentGameState();
     }, [getCurrentGameState]);
 
-    const classes = useStyles();
+    const theme = useTheme();
 
-    const symbolClickHandler = (rowIndex: number, symbolIndex: number): void => {
+    const classes = useStyles(theme)();
+
+    const symbolClickHandler = (
+        rowIndex: number,
+        symbolIndex: number
+    ): void => {
         if (didGameEnd) return;
 
-        if (currentBoard[rowIndex][symbolIndex] !== 'X' && currentBoard[rowIndex][symbolIndex] !== 'O') {
-            processUserMove(rowIndex, symbolIndex, player);
+        if (
+            currentBoard[rowIndex][symbolIndex] !== "X" &&
+            currentBoard[rowIndex][symbolIndex] !== "O"
+        ) {
+            processUserMove(rowIndex, symbolIndex);
         }
     };
 
@@ -45,19 +57,32 @@ function Board({
                     ))
                 )}
             </Grid>
-            <Grid className={classes.gridContainer} container spacing={0} justify="space-between">
-                <Button variant="contained" color="primary" onClick={() => resetGame()}>
+            <Grid
+                className={classes.gridContainer}
+                container
+                spacing={0}
+                justify="space-between"
+            >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => resetGame()}
+                    disabled={didGameEnd}
+                >
                     Reset game
-            </Button>
-                <Button variant="contained" color="primary" onClick={() => startNextGame()}>
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => startNextGame()}
+                    disabled={!didGameEnd}
+                >
                     Start next game
-            </Button>
+                </Button>
             </Grid>
-            <div className="logdesk">
-                {log.map((logRecord) => (
-                    <div>
-                        {logRecord}
-                    </div>
+            <div>
+                {log.map(logRecord => (
+                    <Paper className={classes.paper}>{logRecord}</Paper>
                 ))}
             </div>
         </Fragment>
@@ -70,4 +95,9 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { processUserMove, resetGame, getCurrentGameState, startNextGame })(Board);
+export default connect(mapStateToProps, {
+    processUserMove,
+    resetGame,
+    getCurrentGameState,
+    startNextGame
+})(Board);
