@@ -2,14 +2,16 @@ import {
     RESET_GAME,
     PROCESS_MOVE,
     SET_BOARD,
-    FINISH_GAME
+    FINISH_GAME,
+    PLAYER_MOVE,
+    AI_MOVE
 } from "../actions/actionTypes";
 import { GameElement, Board, GameActions, ReduxState } from "../types";
 
 const returnEmptyBoard = (): Board => [
-    ["", "", ""],
-    ["", "", ""],
-    ["", "", ""]
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
 ];
 
 const initialState: ReduxState = {
@@ -17,7 +19,8 @@ const initialState: ReduxState = {
     AiWins: 0,
     draw: 0,
     player: "X",
-    currentBoard: returnEmptyBoard()
+    currentBoard: returnEmptyBoard(),
+    log: []
 };
 
 const getRowPosition = (index: number): number => {
@@ -41,14 +44,35 @@ const setBoardItem = (board: Board, index: number, symbol: GameElement) => {
     return boardCopy;
 };
 
-export default function(state: ReduxState = initialState, action: GameActions) {
+const getPlayerLog = (rowIndex, columnIndex) => `Player makes a move at row ${rowIndex + 1}, column ${columnIndex + 1}`
+
+const getAILog = (rowIndex, columnIndex) => `AI makes a move at row ${rowIndex + 1}, column ${columnIndex + 1}`
+
+const getAiWinLog = () => 'AI wins. bEwArE, pathetic homo sapiens';
+
+const getPlayerWinLog = () => 'Player wins. There is still hope';
+
+const getDrawLog = () => 'It\'s a draw. For now';
+
+export default function (state: ReduxState = initialState, action: GameActions) {
     const { type, payload } = action;
 
     switch (type) {
+        case PLAYER_MOVE:
+            return {
+                ...state,
+                log: [...state.log, getPlayerLog(payload.rowIndex, payload.columnIndex)]
+            }
+        case AI_MOVE:
+            return {
+                ...state,
+                log: [...state.log, getAILog(payload.rowIndex, payload.columnIndex)]
+            }
         case RESET_GAME:
             return {
                 ...state,
-                currentBoard: returnEmptyBoard()
+                currentBoard: returnEmptyBoard(),
+                log: []
             };
         case PROCESS_MOVE:
             const newBoard = setBoardItem(
@@ -74,20 +98,23 @@ export default function(state: ReduxState = initialState, action: GameActions) {
                 return {
                     ...state,
                     player: newPlayerSide,
-                    draw: draw + 1
+                    draw: draw + 1,
+                    log: [...state.log, getDrawLog()]
                 };
             } else {
                 if (payload.winner === state.player) {
                     return {
                         ...state,
                         player: newPlayerSide,
-                        playerWins: playerWins + 1
+                        playerWins: playerWins + 1,
+                        log: [...state.log, getPlayerWinLog()]
                     };
                 } else {
                     return {
                         ...state,
                         player: newPlayerSide,
-                        AiWins: AiWins + 1
+                        AiWins: AiWins + 1,
+                        log: [...state.log, getAiWinLog()]
                     };
                 }
             }

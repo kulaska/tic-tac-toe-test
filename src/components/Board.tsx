@@ -1,26 +1,23 @@
 import React, { useEffect } from "react";
-import { processUserMove, resetGame, getCurrentGameState } from "../actions/game";
 import { connect } from "react-redux";
+import { processUserMove, resetGame, getCurrentGameState, startNextGame } from "../actions/game";
 
 import Symbol from "./Symbol";
 
 function Board({
-    reducer: { currentBoard, player },
+    reducer: { currentBoard, player, log },
     processUserMove,
     resetGame,
-    getCurrentGameState
+    getCurrentGameState,
+    startNextGame
 }) {
     useEffect(() => {
         getCurrentGameState();
     }, [getCurrentGameState]);
 
-    const getElementIndex = (rowIndex: number, columnIndex: number): number => {
-        return 3 * rowIndex + columnIndex + 1;
-    };
-
     const symbolClickHandler = (rowIndex: number, symbolIndex: number): void => {
         if (currentBoard[rowIndex][symbolIndex] !== 'X' && currentBoard[rowIndex][symbolIndex] !== 'O') {
-            processUserMove(getElementIndex(rowIndex, symbolIndex), player);
+            processUserMove(rowIndex, symbolIndex, player);
         }
     };
 
@@ -42,6 +39,16 @@ function Board({
             <div className="resetButton">
                 <button onClick={() => resetGame()}>Reset game</button>
             </div>
+            <div className="startNextButton">
+                <button onClick={() => startNextGame()}>Start next game</button>
+            </div>
+            <div className="logdesk">
+                {log.map((logRecord) => (
+                    <div>
+                        {logRecord}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -52,4 +59,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { processUserMove, resetGame, getCurrentGameState })(Board);
+export default connect(mapStateToProps, { processUserMove, resetGame, getCurrentGameState, startNextGame })(Board);

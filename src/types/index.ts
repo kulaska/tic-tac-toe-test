@@ -2,8 +2,15 @@ import {
     PROCESS_MOVE,
     RESET_GAME,
     SET_BOARD,
-    FINISH_GAME
+    FINISH_GAME,
+    PLAYER_MOVE,
+    AI_MOVE
 } from "../actions/actionTypes";
+
+type LogMovePayload = {
+    rowIndex: number;
+    columnIndex: number;
+};
 
 type ProcessMovePayload = {
     index: number;
@@ -34,12 +41,22 @@ type FinishGameAction = {
     payload: FinishGamePayload;
 };
 
+type AiMoveAction = {
+    type: typeof AI_MOVE;
+    payload: LogMovePayload;
+};
+
+type PlayerMoveAction = {
+    type: typeof PLAYER_MOVE;
+    payload: LogMovePayload;
+};
+
 type ResetGameAction = {
     type: typeof RESET_GAME;
     payload: any;
 };
 
-export type GameElement = "" | "X" | "O";
+export type GameElement = "X" | "O" | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export type Board = Array<Array<GameElement>>;
 
@@ -49,13 +66,16 @@ export type ReduxState = {
     readonly draw: number;
     readonly currentBoard: Board;
     readonly player: GameElement;
+    readonly log: Array<string>;
 };
 
 export type GameActions =
     | ProcessMoveAction
     | ResetGameAction
     | SetBoardAction
-    | FinishGameAction;
+    | FinishGameAction
+    | AiMoveAction
+    | PlayerMoveAction;
 
 export type ServerRequest = {
     index: number;
