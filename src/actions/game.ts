@@ -50,11 +50,13 @@ function processMove(index: number, symbol: any) {
     };
 }
 
-function setBoard(newBoard: Board, isEnd?: boolean, winner?: GameElement) {
+function setBoard(newBoard: Board, isEnd?: boolean, player?: GameElement) {
     return {
         type: SET_BOARD,
         payload: {
-            newBoard: [...newBoard]
+            newBoard: [...newBoard],
+            didGameEnd: isEnd,
+            player
         }
     };
 }
@@ -141,7 +143,9 @@ export function getCurrentGameState() {
 
             const data: ServerResponse = response.data;
 
-            dispatch(setBoard(data.result.board));
+            dispatch(
+                setBoard(data.result.board, data.result.end, data.result.player)
+            );
         } catch (err) {
             console.log(err);
         }
@@ -155,7 +159,7 @@ export function startNextGame() {
 
             const data: ServerResponse = response.data;
 
-            dispatch(setBoard(data.result.board));
+            dispatch(setBoard(data.result.board, false, data.result.player));
         } catch (err) {
             console.log(err);
         }

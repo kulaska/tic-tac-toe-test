@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "@material-ui/core";
+import { useTheme, useMediaQuery } from "@material-ui/core";
 
 import useStyles from "./Board.styles";
 

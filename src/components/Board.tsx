@@ -1,5 +1,11 @@
 import React, { useEffect, Fragment } from "react";
-import { Button, Grid, Paper, useTheme } from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Paper,
+    useTheme,
+    useMediaQuery
+} from "@material-ui/core";
 import { connect } from "react-redux";
 import {
     processUserMove,
@@ -25,6 +31,8 @@ function Board({
     const theme = useTheme();
 
     const classes = useStyles(theme)();
+
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     const symbolClickHandler = (
         rowIndex: number,
@@ -61,7 +69,7 @@ function Board({
                 className={classes.gridContainer}
                 container
                 spacing={0}
-                justify="space-between"
+                justify={isSmallScreen ? "center" : "space-between"}
             >
                 <Button
                     variant="contained"

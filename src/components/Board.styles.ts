@@ -10,12 +10,19 @@ export default (theme: Theme) =>
             border: "1px solid black",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
+            [theme.breakpoints.down("sm")]: {
+                width: theme.spacing(12),
+                height: theme.spacing(12)
+            }
         },
         gridContainer: {
             maxWidth: theme.spacing(48),
             margin: "auto",
-            padding: "24px 0"
+            padding: "24px 0",
+            [theme.breakpoints.down("sm")]: {
+                maxWidth: theme.spacing(36)
+            }
         },
         symbol: {
             fontSize: "64px"

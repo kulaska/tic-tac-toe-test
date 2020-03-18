@@ -62,16 +62,16 @@ export default function(state: ReduxState = initialState, action: GameActions) {
             return {
                 ...state,
                 log: [
-                    ...state.log,
-                    getPlayerLog(payload.rowIndex, payload.columnIndex)
+                    getPlayerLog(payload.rowIndex, payload.columnIndex),
+                    ...state.log
                 ]
             };
         case AI_MOVE:
             return {
                 ...state,
                 log: [
-                    ...state.log,
-                    getAILog(payload.rowIndex, payload.columnIndex)
+                    getAILog(payload.rowIndex, payload.columnIndex),
+                    ...state.log
                 ]
             };
         case RESET_GAME:
@@ -96,7 +96,8 @@ export default function(state: ReduxState = initialState, action: GameActions) {
             return {
                 ...state,
                 currentBoard: payload.newBoard,
-                didGameEnd: false
+                didGameEnd: !!payload.didGameEnd,
+                player: payload.player
             };
         case FINISH_GAME:
             let newPlayerSide = changePlayerSide(state.player);
@@ -105,7 +106,7 @@ export default function(state: ReduxState = initialState, action: GameActions) {
                 return {
                     ...state,
                     player: newPlayerSide,
-                    log: [...state.log, getDrawLog()],
+                    log: [getDrawLog(), ...state.log],
                     didGameEnd: true
                 };
             } else {
@@ -113,14 +114,14 @@ export default function(state: ReduxState = initialState, action: GameActions) {
                     return {
                         ...state,
                         player: newPlayerSide,
-                        log: [...state.log, getPlayerWinLog()],
+                        log: [getPlayerWinLog(), ...state.log],
                         didGameEnd: true
                     };
                 } else {
                     return {
                         ...state,
                         player: newPlayerSide,
-                        log: [...state.log, getAiWinLog()],
+                        log: [getAiWinLog(), ...state.log],
                         didGameEnd: true
                     };
                 }

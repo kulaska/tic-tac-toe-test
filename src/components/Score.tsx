@@ -1,15 +1,11 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { getHistoryAndScore } from '../actions/score';
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { getHistoryAndScore } from "../actions/score";
 
-function Score({
-    getHistoryAndScore,
-    score
-}) {
-
+function Score({ getHistoryAndScore, score }) {
     useEffect(() => {
         getHistoryAndScore();
-    }, [getHistoryAndScore])
+    }, [getHistoryAndScore]);
 
     return (
         <div>
@@ -19,13 +15,23 @@ function Score({
             <div>Team 'X' won: {score.X} times</div>
             <div>Team 'O' won: {score.O} times</div>
 
-            <div>Game history: {score.list.map((item, i) => (<div>Game {i}: {item.ts}</div>))}</div>
+            <div>
+                Game history:{" "}
+                {score.list.map((item, i) => (
+                    <div key={i}>
+                        Game {i}: {item.ts}
+                        {item.winner
+                            ? `, winner: ${item.winner}, team: ${item.team}`
+                            : null}
+                    </div>
+                ))}
+            </div>
         </div>
-    )
+    );
 }
 
 const mapStateToProps = state => ({
     score: state.scoreReducer
-})
+});
 
-export default connect(mapStateToProps, { getHistoryAndScore })(Score)
+export default connect(mapStateToProps, { getHistoryAndScore })(Score);
